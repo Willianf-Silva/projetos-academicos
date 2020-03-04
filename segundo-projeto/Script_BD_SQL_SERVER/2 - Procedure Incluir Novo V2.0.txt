@@ -1,0 +1,576 @@
+GO
+SET LANGUAGE 'us_english'
+
+GO
+SET DATEFORMAT DMY
+GO
+USE Locadora
+
+GO
+CREATE PROC sp_novoCliente
+@Cliente_Nome varchar(20),
+@Cliente_Sobrenome varchar(20),
+@Cliente_CPF CHAR(11),
+@Cliente_Foto varchar(max),
+@Cliente_Telefone varchar(14),
+@Cliente_Endereco varchar(20),
+@Cliente_Bairro varchar(20),
+@Cliente_Cep varchar(9),
+@Cliente_Email varchar(50),
+@Cliente_Nascimento datetime,
+@Cliente_Genero VARCHAR(9) 
+AS
+
+IF EXISTS (SELECT Cliente_CPF FROM Cliente WHERE Cliente_CPF = @Cliente_CPF)
+	BEGIN
+		RAISERROR('Cliente com o CPF %s já possui cadastro.',10,1,@Cliente_CPF)
+		RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY
+		INSERT INTO Cliente(
+		Cliente_Nome,
+		Cliente_Sobrenome,
+		Cliente_CPF,
+		Cliente_Foto,
+		Cliente_Telefone,
+		Cliente_Endereco,
+		Cliente_Bairro,
+		Cliente_Cep,
+		Cliente_Email,
+		Cliente_Nascimento,
+		Cliente_Genero)
+		VALUES (
+		@Cliente_Nome,
+		@Cliente_Sobrenome,
+		@Cliente_CPF,
+		@Cliente_Foto,
+		@Cliente_Telefone,
+		@Cliente_Endereco,
+		@Cliente_Bairro,
+		@Cliente_Cep,
+		@Cliente_Email,
+		@Cliente_Nascimento,
+		@Cliente_Genero)
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+		RAISERROR('Cadastro não realizado para o cliente %s. Favor tentar novamente.', 10,1,@Cliente_Nome)
+	END CATCH
+
+
+GO
+EXEC sp_novoCliente 'Willian','Silva','40925136824',null,'(19)3935-7793','Rua 2','Nova Veneza','13348-772','willian@williansilva.com','21/07/1992','Masculino'
+-- Testando incluir cliente com o mesmo CPF
+/*GO
+EXEC sp_novoCliente 'Willian','Silva','40925136824',null,'(19)3935-7793','Rua 2','Nova Veneza','13348-772','willian@williansilva.com','21/07/1992','Masculino'
+*/
+/*
+GO
+SELECT * FROM Cliente
+*/
+
+
+GO
+CREATE PROC sp_novoFuncionario
+@Funcionario_Nome varchar(20),
+@Funcionario_Sobrenome varchar(20),
+@Funcionario_CPF CHAR(11),
+@Funcionario_Foto varchar(max),
+@Funcionario_Telefone varchar(14),
+@Funcionario_Endereco varchar(20),
+@Funcionario_Bairro varchar(20),
+@Funcionario_Cep varchar(9),
+@Funcionario_Email varchar(50),
+@Funcionario_Nascimento datetime,
+@Funcionario_Genero VARCHAR(9),
+@Funcionario_Login varchar(15),
+@Funcionario_senha varchar(15)
+
+AS
+
+IF EXISTS (SELECT Funcionario_CPF FROM Funcionario WHERE Funcionario_CPF = @Funcionario_CPF)
+	BEGIN
+		RAISERROR('Funcionário com o CPF %s já possui cadastro.',10,1,@Funcionario_CPF)
+		RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY	
+		INSERT INTO Funcionario(
+		Funcionario_Nome,
+		Funcionario_Sobrenome,
+		Funcionario_CPF,
+		Funcionario_Foto,
+		Funcionario_Telefone,
+		Funcionario_Endereco,
+		Funcionario_Bairro,
+		Funcionario_Cep,
+		Funcionario_Email,
+		Funcionario_Nascimento,
+		Funcionario_Genero,
+		Funcionario_Login,
+		Funcionario_senha)
+		VALUES (
+		@Funcionario_Nome,
+		@Funcionario_Sobrenome,
+		@Funcionario_CPF,
+		@Funcionario_Foto,
+		@Funcionario_Telefone,
+		@Funcionario_Endereco,
+		@Funcionario_Bairro,
+		@Funcionario_Cep,
+		@Funcionario_Email,
+		@Funcionario_Nascimento,
+		@Funcionario_Genero,
+		@Funcionario_Login,
+		@Funcionario_senha)
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+		RAISERROR('Cadastro não realizado para o funcionario %s. Favor tentar novamente.', 10,1,@Funcionario_Nome)
+	END CATCH
+
+
+GO
+EXEC sp_novoFuncionario 'Bruno','Silva','40925136824',null,'(19)3935-7793','Rua 5','Nova Veneza','13348-772','bruno@brunosilva.com','17/07/1995','Masculino','admin','admin'
+
+-- Testando incluir funcionário com o mesmo CPF
+/*GO
+EXEC sp_novoFuncionario 'Bruno','Silva','40925136824',null,'(19)3935-7793','Rua 5','Nova Veneza','13348-772','bruno@brunosilva.com','17/07/1995','Masculino','admin','admin'
+*/
+/*
+GO
+SELECT * FROM Funcionario
+*/
+
+
+
+
+GO
+CREATE PROC sp_novoPais
+@Pais_Nome varchar(20)
+AS
+
+IF EXISTS (SELECT Pais_Codigo FROM Pais WHERE Pais_Nome = @Pais_Nome)
+	BEGIN
+		RAISERROR('O País %s já possui cadastro.',10,1,@Pais_Nome)
+		RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY
+		INSERT INTO Pais(Pais_Nome)
+		VALUES (@Pais_Nome)
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+		RAISERROR('Cadastro não realizado para o país %s. Favor tentar novamente.', 10,1,@Pais_Nome)
+	END CATCH
+
+
+GO
+EXEC sp_novoPais 'Brasil'
+
+-- Testando incluir o mesmo país
+/*GO
+EXEC sp_novoPais 'Brasil'
+*/
+/*
+GO
+SELECT * FROM Pais
+*/
+
+
+
+
+GO
+CREATE PROC sp_novoTipoLocacao
+@TipoLocacao_Nome varchar(20),
+@TipoLocacao_Descricao varchar(MAX),
+@TipoLocacao_Tempo INT,
+@TipoLocacao_ValorUnit DECIMAL(5,2)
+AS
+IF EXISTS (SELECT @TipoLocacao_Nome FROM TipoLocacao WHERE TipoLocacao_Nome = @TipoLocacao_Nome)
+	BEGIN
+		RAISERROR('Tipo de locação "%s" já possui cadastro.',10,1,@TipoLocacao_Nome)
+		RETURN
+	END
+
+
+BEGIN TRAN
+	BEGIN TRY
+		INSERT INTO TipoLocacao(
+		TipoLocacao_Nome,
+		TipoLocacao_Descricao,
+		TipoLocacao_Tempo,
+		TipoLocacao_ValorUnit
+		)
+		VALUES (
+		@TipoLocacao_Nome,
+		@TipoLocacao_Descricao,
+		@TipoLocacao_Tempo,
+		@TipoLocacao_ValorUnit
+		)
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+		RAISERROR('Cadastro não realizado para o tipo de locação %s. Favor tentar novamente.', 10,1,@TipoLocacao_Nome)
+	END CATCH
+
+
+GO
+EXEC sp_novoTipoLocacao 'Lançamento 24h','Todos os lançamentos devem ser devolvidos em 24h',1,10.30
+
+-- Testando incluir um tipo identico ao tipo ja cadastrado
+/*GO
+EXEC sp_novoTipoLocacao 'Lançamento 24h','Todos os lançamentos devem ser devolvidos em 24h',1,10.30
+*/
+/*
+GO
+SELECT * FROM TipoLocacao
+*/
+
+
+
+
+GO
+CREATE PROC sp_novoTitulo
+@Titulo_Nome VARCHAR(30),
+@Titulo_Capa VARCHAR(MAX),
+@Titulo_Genero CHAR(20),
+@Titulo_DataLancamento DATETIME,
+@Titulo_Ator VARCHAR(20),
+@Titulo_Diretor VARCHAR(20),
+@Titulo_Duracao TIME,
+@Titulo_Sinopse VARCHAR(MAX),
+@Titulo_Produtora VARCHAR(30),
+@Titulo_DataCompra DATETIME,
+@Titulo_Quantidade INT,
+@Titulo_Tipo char(5), -- "S"erie ou "F"ilme
+@Pais_Nome VARCHAR(20), --@Pais_Codigo INT,
+@Titulo_Midia_Tipo CHAR(10), --"L"egendado ou "D"ublado (Campo temporário para inserir na mídia)
+@Titulo_TipoLocacao_Nome VARCHAR(20) --@Titulo_TipoLocacao_Codigo INT
+
+AS
+-- Recendo da aplicação o nome do pais e o nome do titulo para consultar os dados no banco e atribuir o código nas variáveis
+DECLARE @Pais_Codigo INT
+DECLARE @Titulo_TipoLocacao_Codigo INT
+
+SELECT @Pais_Codigo = Pais_Codigo FROM Pais WHERE Pais_Nome LIKE @Pais_Nome
+SELECT @Titulo_TipoLocacao_Codigo = TipoLocacao_Codigo FROM TipoLocacao WHERE TipoLocacao_Nome LIKE @Titulo_TipoLocacao_Nome
+
+IF EXISTS (SELECT Titulo_Nome FROM Titulo WHERE Titulo_Nome = @Titulo_Nome)
+	BEGIN
+	RAISERROR('O titulo "%s" já possui cadastro.', 10, 1, @Titulo_Nome)
+	RETURN
+	END
+
+	
+IF NOT EXISTS (SELECT Pais_Codigo FROM Pais WHERE Pais_Codigo = @Pais_Codigo)
+	BEGIN
+	RAISERROR('O país com o código "%d" não possui cadastro.', 10, 1, @Pais_Codigo)
+	RETURN
+	END
+
+IF NOT EXISTS (SELECT TipoLocacao_Codigo FROM TipoLocacao WHERE TipoLocacao_Codigo = @Titulo_TipoLocacao_Codigo)
+	BEGIN
+	RAISERROR('O tipo de locação com o código "%d" não possui cadastro.', 10, 1, @Titulo_TipoLocacao_Codigo)
+	RETURN
+	END
+
+IF (@Titulo_Quantidade <= 0)
+	BEGIN
+	RAISERROR('Quantidade de DVDs inválida',10,1)
+	RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY
+		INSERT INTO Titulo(
+		Titulo_Nome,
+		Titulo_Capa,
+		Titulo_Genero,
+		Titulo_DataLancamento,
+		Titulo_Ator,
+		Titulo_Diretor,
+		Titulo_Duracao,
+		Titulo_Sinopse,
+		Titulo_Produtora,
+		Titulo_DataCompra,
+		Titulo_Quantidade,
+		Titulo_Tipo, -- "S"erie ou "F"ilme
+		Pais_Codigo,
+		Titulo_Midia_Tipo,
+		Titulo_TipoLocacao_Codigo
+		)
+		VALUES (
+		@Titulo_Nome,
+		@Titulo_Capa,
+		@Titulo_Genero,
+		@Titulo_DataLancamento,
+		@Titulo_Ator,
+		@Titulo_Diretor,
+		@Titulo_Duracao,
+		@Titulo_Sinopse,
+		@Titulo_Produtora,
+		@Titulo_DataCompra,
+		@Titulo_Quantidade,
+		@Titulo_Tipo, -- "S"erie ou "F"ilme
+		@Pais_Codigo,
+		@Titulo_Midia_Tipo,
+		@Titulo_TipoLocacao_Codigo
+		)
+		
+		COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+	END CATCH
+
+
+
+GO
+CREATE TRIGGER atualizarNovaMidia ON Titulo
+FOR INSERT
+AS
+
+DECLARE @CONT INT
+SET @CONT = 0
+
+DECLARE @Titulo_Codigo INT
+DECLARE @Titulo_Quantidade INT
+DECLARE @Midia_Tipo CHAR(10)
+DECLARE @TipoLocacao_Codigo INT
+
+SELECT @TipoLocacao_Codigo = Titulo_TipoLocacao_Codigo, @Midia_Tipo = Titulo_Midia_Tipo, @Titulo_Quantidade = Titulo_Quantidade, @Titulo_Codigo = Titulo_Codigo FROM INSERTED
+
+WHILE @CONT < @Titulo_Quantidade
+			BEGIN
+			INSERT INTO Midia(Midia_Situacao, Midia_Tipo, Midia_Obsoleto, Titulo_Codigo)
+			VALUES ('Disponível', @Midia_Tipo , 0, @Titulo_Codigo)
+			SET @CONT = @CONT + 1
+			END
+
+INSERT INTO TituloTipoLocacao(
+Titulo_Codigo,
+TipoLocacao_Codigo
+)
+VALUES (
+@Titulo_Codigo,
+@TipoLocacao_Codigo
+)
+
+GO
+EXEC sp_novoTitulo 'Jogos Vorazes',null,null,null,null,null,null,null,null,null,5,'Filme','Brasil','Dublado','Lançamento 24h'
+
+-- Testando cadastrar o titulo com o mesmo nome
+/*GO
+EXEC sp_novoTitulo 'Jogos Vorazes',null,null,null,null,null,null,null,null,null,5,'Filme','Brasil','Dublado','Lançamento 24h'
+*/
+
+-- Testando cadastrar um tipo de locação inexistente
+/*GO
+EXEC sp_novoTitulo 'Jogos Vorazes',null,null,null,null,null,null,null,null,null,5,'Filme','Brasil','Dublado','Lançamento 48h'
+*/
+
+/*
+SELECT * FROM Titulo
+SELECT * FROM Midia
+*/
+
+
+
+
+
+GO
+CREATE PROC sp_novoMidia
+@Midia_Tipo CHAR(10), --"L"egendado ou "D"ublado
+@Titulo_Codigo INT
+AS
+
+IF NOT EXISTS (SELECT Titulo_Codigo FROM Titulo WHERE Titulo_Codigo = @Titulo_Codigo)
+	BEGIN
+	RAISERROR('O titulo com o código %d não possui cadastro.', 10, 1, @Titulo_Codigo)
+	RETURN
+	END
+
+
+BEGIN TRAN
+	BEGIN TRY
+		INSERT INTO Midia(
+		Midia_Situacao, --"L"ocado ou "D"isponivel ou "E"xtraviado
+		Midia_Tipo, --"L"egendado ou "D"ublado
+		Midia_Obsoleto, --"1" Sim ou "0" Não
+		Titulo_Codigo
+		)
+		VALUES (
+		'Disponível', --"L"ocado ou "D"isponivel ou "E"xtraviado
+		@Midia_Tipo, --"L"egendado ou "D"ublado
+		0, --"1" Sim ou "0" Não
+		@Titulo_Codigo
+		)
+		COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+	END CATCH
+
+GO
+EXEC sp_novoMidia 'Legendado',1
+
+-- SELECT * FROM Midia WHERE Titulo_Codigo = 1
+
+
+
+
+
+GO
+CREATE PROC sp_novoLocacao
+@Cliente_Codigo INT,
+@Funcionario_Codigo INT,
+@Locacao_ValorPago DECIMAL(5,2)
+AS
+
+BEGIN TRAN
+	BEGIN TRY
+		INSERT INTO Locacao(
+		Cliente_Codigo,
+		Funcionario_Codigo,
+		Locacao_ValorPago,
+		Locacao_Data
+		)
+		VALUES (
+		@Cliente_Codigo,
+		@Funcionario_Codigo,
+		@Locacao_ValorPago,
+		GETDATE()
+		)
+
+		SELECT @@IDENTITY RETORNO;
+
+		COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+	END CATCH
+
+
+GO
+EXEC sp_novoLocacao 1,1,10.30
+
+
+
+
+GO
+CREATE PROC sp_novoItemLocacao
+@Locacao_Codigo INT,
+@Midia_Codigo INT
+AS
+
+DECLARE @TipoLocacao_Tempo INT
+SELECT @TipoLocacao_Tempo = TipoLocacao_Tempo FROM Midia AS M
+INNER JOIN Titulo AS T
+ON M.Titulo_Codigo = T.Titulo_Codigo
+INNER JOIN TituloTipoLocacao AS TTL
+ON T.Titulo_Codigo = TTL.Titulo_Codigo
+INNER JOIN TipoLocacao AS TL
+ON TTL.TipoLocacao_Codigo = TL.TipoLocacao_Codigo
+WHERE Midia_Codigo = @Midia_Codigo
+
+
+-- Verificar se a locação existe
+IF NOT EXISTS (SELECT Locacao_Codigo FROM Locacao WHERE Locacao_Codigo = @Locacao_Codigo)
+	BEGIN
+	RAISERROR('Não existe a locação com o código %d.',10,1, @Locacao_Codigo)
+	RETURN
+	END
+
+-- Verificar se a midia existe
+IF NOT EXISTS (SELECT Midia_Codigo FROM Midia WHERE Midia_Codigo = @Midia_Codigo)
+	BEGIN
+	RAISERROR('A mídia com o código %d não está cadastrada.',10,1, @Midia_Codigo)
+	RETURN
+	END
+
+-- Verificar se a midia esta disponivel
+DECLARE @Midia_Situacao CHAR(10)
+SELECT @Midia_Situacao = Midia_Situacao FROM Midia WHERE Midia_Codigo = @Midia_Codigo
+
+--Verificar se a data de devolução é no domingo se 
+
+DECLARE @data_Devolucao DATETIME
+IF (DATEPART(DW,getdate() + @TipoLocacao_Tempo) = 1)
+	BEGIN
+	SET @data_Devolucao = (getdate() + @TipoLocacao_Tempo) + 1
+	END
+ELSE
+	BEGIN
+	SET @data_Devolucao = getdate() + @TipoLocacao_Tempo
+	END
+
+
+IF (@Midia_Situacao = 'Locado')
+	BEGIN
+	RAISERROR('A mídia com o código %d não está disponível.',10,1, @Midia_Codigo)
+	RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY
+		INSERT INTO ItemLocacao(
+		ItemLocacao_Devolucao,
+		ItemLocacao_MultaDevolucao,		
+		ItemLocacao_Situacao, -- "L"ocado ou "D"evolvido
+		Midia_Codigo,
+		Locacao_Codigo
+		)
+		VALUES (
+		@data_Devolucao,
+		0,		
+		'Locado', -- "L"ocado ou "D"evolvido
+		@Midia_Codigo,
+		@Locacao_Codigo
+		)
+
+		-- Criar uma trigger de update para realizar o procedimento abaixo
+		-- Procedimento após inserção para alterar situação da midia após locação
+		UPDATE Midia
+		SET Midia_Situacao = 'Locado'
+		WHERE Midia_Codigo = @Midia_Codigo		
+
+		COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+	END CATCH
+
+
+-- Teste funcionando corretamente
+GO
+EXEC sp_novoItemLocacao 1,2
+
+/*
+-- Testando passar uma midia inexistente
+GO
+EXEC sp_novoItemLocacao 1,10.30,2999
+
+-- Testando passar uma midia com situação 'L'ocado
+GO
+EXEC sp_novoItemLocacao 1,10.30,2
+
+-- Testando passar uma locação inválida
+GO
+EXEC sp_novoItemLocacao 2,00.30,4
+*/
+
+/*
+SELECT * FROM Locacao
+SELECT * FROM ItemLocacao
+SELECT * FROM Midia
+*/

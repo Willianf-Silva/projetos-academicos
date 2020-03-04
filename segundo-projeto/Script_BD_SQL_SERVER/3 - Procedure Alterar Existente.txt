@@ -1,0 +1,286 @@
+GO
+SET LANGUAGE 'us_english'
+
+GO
+SET DATEFORMAT DMY
+GO
+USE Locadora
+
+GO
+CREATE PROC sp_alterarCliente
+@Cliente_Codigo INT,
+@Cliente_Nome VARCHAR(20),
+@Cliente_Sobrenome VARCHAR(20),
+@Cliente_CPF CHAR(11),
+@Cliente_Foto VARCHAR(max),
+@Cliente_Telefone VARCHAR(14),
+@Cliente_Endereco VARCHAR(20),
+@Cliente_Bairro VARCHAR(20),
+@Cliente_Cep VARCHAR(9),
+@Cliente_Email VARCHAR(50),
+@Cliente_Nascimento DATETIME,
+@Cliente_Genero VARCHAR(9) 
+AS
+
+IF NOT EXISTS (SELECT Cliente_Codigo FROM Cliente WHERE Cliente_Codigo = @Cliente_Codigo)
+	BEGIN
+		RAISERROR('Cliente com o código %d não possui cadastro.',10,1,@Cliente_Codigo)
+		RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY
+		UPDATE Cliente
+		SET
+		Cliente_Nome = @Cliente_Nome,
+		Cliente_Sobrenome = @Cliente_Sobrenome,
+		Cliente_CPF = @Cliente_CPF,
+		Cliente_Foto = @Cliente_Foto,
+		Cliente_Telefone = @Cliente_Telefone,
+		Cliente_Endereco = @Cliente_Endereco,
+		Cliente_Bairro = @Cliente_Bairro,
+		Cliente_Cep = @Cliente_Cep,
+		Cliente_Email = @Cliente_Email,
+		Cliente_Nascimento = @Cliente_Nascimento,
+		Cliente_Genero = @Cliente_Genero
+		WHERE Cliente_Codigo = @Cliente_Codigo
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+		RAISERROR('Alteração não realizada para o cliente com o código %d. Favor tentar novamente.', 10,1,@Cliente_Codigo)
+	END CATCH
+
+
+-- Testando alteração
+GO
+SELECT * FROM Cliente
+EXEC sp_alterarCliente 1,'Willian','Ferreira da Silva','40925136824',null,'(19)3935-7793','Rua 2','Nova Veneza','13348-772','willian@williansilva.com','21/07/1992','Masculino'
+SELECT * FROM Cliente
+
+
+
+GO
+CREATE PROC sp_alterarFuncionario
+@Funcionario_Codigo INT,
+@Funcionario_Nome VARCHAR(20),
+@Funcionario_Sobrenome VARCHAR(20),
+@Funcionario_CPF CHAR(11),
+@Funcionario_Foto VARCHAR(max),
+@Funcionario_Telefone VARCHAR(14),
+@Funcionario_Endereco VARCHAR(20),
+@Funcionario_Bairro VARCHAR(20),
+@Funcionario_Cep VARCHAR(9),
+@Funcionario_Email VARCHAR(50),
+@Funcionario_Nascimento DATETIME,
+@Funcionario_Genero VARCHAR(9),
+@Funcionario_Login VARCHAR(15),
+@Funcionario_senha VARCHAR(15)
+
+AS
+
+IF NOT EXISTS (SELECT Funcionario_Codigo FROM Funcionario WHERE Funcionario_Codigo = @Funcionario_Codigo)
+	BEGIN
+		RAISERROR('Funcionário com o código %d não possui cadastro.',10,1,@Funcionario_Codigo)
+		RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY	
+		UPDATE Funcionario
+		SET
+		Funcionario_Nome = @Funcionario_Nome,
+		Funcionario_Sobrenome = @Funcionario_Sobrenome,
+		Funcionario_CPF = @Funcionario_CPF,
+		Funcionario_Foto = @Funcionario_Foto,
+		Funcionario_Telefone = @Funcionario_Telefone,
+		Funcionario_Endereco = @Funcionario_Endereco,
+		Funcionario_Bairro = @Funcionario_Bairro,
+		Funcionario_Cep = @Funcionario_Cep,
+		Funcionario_Email = @Funcionario_Email,
+		Funcionario_Nascimento = @Funcionario_Nascimento,
+		Funcionario_Genero = @Funcionario_Genero,
+		Funcionario_Login = @Funcionario_Login,
+		Funcionario_senha = @Funcionario_senha
+		WHERE Funcionario_Codigo = @Funcionario_Codigo
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+		RAISERROR('Alteração não realizada para o funcionario com o código %d. Favor tentar novamente.', 10,1,@Funcionario_Codigo)
+	END CATCH
+
+
+GO
+SELECT * FROM Funcionario
+EXEC sp_alterarFuncionario 1,'Bruno','Ferreira da Silva','40925136824',null,'(19)3935-7793','Rua 5','Nova Veneza','13348-772','bruno@brunosilva.com','17/07/1995','Masculino','admin','admin'
+SELECT * FROM Funcionario
+
+
+GO
+CREATE PROC sp_alterarPais
+@Pais_Codigo INT,
+@Pais_Nome VARCHAR(20)
+AS
+
+
+IF NOT EXISTS (SELECT Pais_Codigo FROM Pais WHERE Pais_Codigo = @Pais_Codigo)
+	BEGIN
+		RAISERROR('O País com o código %d não possui cadastro.',10,1,@Pais_Codigo)
+		RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY
+		UPDATE Pais
+		SET Pais_Nome = @Pais_Nome
+		WHERE Pais_Codigo = @Pais_Codigo
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+		RAISERROR('Alteração não realizada para o País código %d. Favor tentar novamente.', 10,1,@Pais_Codigo)
+	END CATCH
+
+
+GO
+SELECT * FROM Pais
+EXEC sp_alterarPais 1 ,'Japão'
+SELECT * FROM Pais
+
+
+GO
+CREATE PROC sp_alterarTipoLocacao
+@TipoLocacao_Codigo INT,
+@TipoLocacao_Nome varchar(20),
+@TipoLocacao_Descricao varchar(MAX),
+@TipoLocacao_Tempo INT,
+@TipoLocacao_ValorUnit DECIMAL(5,2)
+AS
+
+
+IF NOT EXISTS (SELECT TipoLocacao_Codigo FROM TipoLocacao WHERE TipoLocacao_Codigo = @TipoLocacao_Codigo)
+	BEGIN
+		RAISERROR('O tipo de locação com o código %d não possui cadastro.',10,1,@TipoLocacao_Codigo)
+		RETURN
+	END
+
+BEGIN TRAN
+	BEGIN TRY
+		UPDATE TipoLocacao
+		SET 		
+		TipoLocacao_Nome = @TipoLocacao_Nome,
+		TipoLocacao_Descricao = @TipoLocacao_Descricao,
+		TipoLocacao_Tempo = @TipoLocacao_Tempo,
+		TipoLocacao_ValorUnit = @TipoLocacao_ValorUnit
+		WHERE TipoLocacao_Codigo = @TipoLocacao_Codigo
+	COMMIT
+	END TRY
+	BEGIN CATCH
+		ROLLBACK
+		RAISERROR('Alteração não realizada para o tipo de locação código %d. Favor tentar novamente.', 10,1,@TipoLocacao_Codigo)
+	END CATCH
+
+
+GO
+SELECT * FROM TipoLocacao
+EXEC sp_alterarTipoLocacao 1,'Super Lançamento','Devolução em 24h',1,05.35
+SELECT * FROM TipoLocacao
+
+
+
+
+-- Procedure para alterar um titulo (produto)
+GO
+CREATE PROC sp_alterarTitulo
+@Titulo_Codigo INT,
+@Titulo_Nome VARCHAR(30),
+@Titulo_Capa VARCHAR(MAX),
+@Titulo_Genero CHAR(20),
+@Titulo_DataLancamento DATETIME,
+@Titulo_Ator VARCHAR(20),
+@Titulo_Diretor VARCHAR(20),
+@Titulo_Duracao TIME,-- formatar para hh:mm
+@Titulo_Sinopse VARCHAR(MAX),
+@Titulo_Produtora VARCHAR(30),
+@Titulo_DataCompra DATETIME,
+@Titulo_Quantidade INT,
+@Titulo_Tipo char(5), -- "S"erie ou "F"ilme
+@Pais_Nome VARCHAR(20), --@Pais_Codigo INT,
+@Titulo_Midia_Tipo CHAR(10), --"L"egendado ou "D"ublado (Campo temporário para inserir na mídia)
+@Titulo_TipoLocacao_Nome VARCHAR(20) --@Titulo_TipoLocacao_Codigo INT
+
+AS
+-- Recendo da aplicação o nome do pais e o nome do titulo para consultar os dados no banco e atribuir o código nas variáveis
+DECLARE @Pais_Codigo INT
+DECLARE @Titulo_TipoLocacao_Codigo INT
+
+SELECT @Pais_Codigo = Pais_Codigo FROM Pais WHERE Pais_Nome LIKE @Pais_Nome
+SELECT @Titulo_TipoLocacao_Codigo = TipoLocacao_Codigo FROM TipoLocacao WHERE TipoLocacao_Nome LIKE @Titulo_TipoLocacao_Nome
+
+
+BEGIN TRY
+	BEGIN TRAN
+		UPDATE Titulo
+		SET
+		Titulo_Nome = @Titulo_Nome,
+		Titulo_Capa = @Titulo_Capa,
+		Titulo_Genero = @Titulo_Genero,
+		Titulo_DataLancamento = @Titulo_DataLancamento,
+		Titulo_Ator = @Titulo_Ator,
+		Titulo_Diretor = @Titulo_Diretor,
+		Titulo_Duracao = @Titulo_Duracao,
+		Titulo_Sinopse = @Titulo_Sinopse,
+		Titulo_Produtora = @Titulo_Produtora,
+		Titulo_DataCompra = @Titulo_DataCompra,
+		Titulo_Quantidade = @Titulo_Quantidade,
+		Titulo_Tipo = @Titulo_Tipo, -- "S"erie ou "F"ilme
+		Pais_Codigo = @Pais_Codigo,
+		Titulo_Midia_Tipo = @Titulo_Midia_Tipo, --"L"egendado ou "D"ublado (Campo temporário para inserir na mídia)
+		Titulo_TipoLocacao_Codigo = @Titulo_TipoLocacao_Codigo
+		WHERE Titulo_Codigo  = @Titulo_Codigo
+	COMMIT
+END TRY
+BEGIN CATCH
+	ROLLBACK
+	RAISERROR('Operação não realizada.',10,1)
+END CATCH
+
+
+GO
+SELECT * FROM Titulo
+EXEC sp_alterarTitulo 1,'Jogos Vorazes',NULL,'Terror','30-04-2019','Willian S.','Karen',null,'descrição qualquer','Faz filmes','17-05-2019',5,'Filme','Japão','Legendado','Super Lançamento'
+SELECT * FROM Titulo
+
+
+-- Procedure para alterar uma midia
+GO
+CREATE PROC sp_alterarMidia
+@Midia_Codigo INT,
+@Midia_Situacao CHAR(10), --"L"ocado ou "D"isponivel ou "E"xtraviado
+@Midia_Tipo CHAR(10), --"L"egendado ou "D"ublado
+@Midia_Obsoleto BIT, --"1" Sim ou "0" Não
+@Titulo_Codigo INT
+AS
+
+BEGIN TRY
+	BEGIN TRAN
+		UPDATE Midia
+		SET
+		Midia_Situacao = @Midia_Situacao, --"L"ocado ou "D"isponivel ou "E"xtraviado
+		Midia_Tipo = @Midia_Tipo, --"L"egendado ou "D"ublado
+		Midia_Obsoleto = @Midia_Obsoleto, --"1" Sim ou "0" Não
+		Titulo_Codigo = @Titulo_Codigo
+		WHERE Midia_Codigo = @Midia_Codigo
+	COMMIT
+END TRY
+BEGIN CATCH
+	ROLLBACK
+	RAISERROR('Operação não realizada.',10,1)
+END CATCH
+
+
+GO
+SELECT * FROM Midia WHERE Midia_Codigo = 3
+EXEC sp_alterarMidia 3,'Locado','Legendado',0,1
+SELECT * FROM Midia WHERE Midia_Codigo = 3

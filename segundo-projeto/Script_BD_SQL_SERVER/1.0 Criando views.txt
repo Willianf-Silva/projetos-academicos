@@ -1,0 +1,68 @@
+USE Locadora
+
+-- View responsável por selecionar todos os produtos cadastrados no banco. Principal utilização na aplicação JAVA na tela Produto
+GO
+CREATE VIEW vwTitulos AS
+SELECT T.Titulo_Codigo AS Codigo,
+T.Titulo_Nome AS Nome,
+T.Titulo_Genero AS Genero, 
+Convert(varchar(10),T.Titulo_DataLancamento,103) AS Lançamento,
+T.Titulo_Ator AS Atores, 
+T.Titulo_Diretor AS Diretor, 
+Convert(varchar(10),T.Titulo_Duracao,108) AS Duração,
+T.Titulo_Sinopse AS Sinopse, 
+T.Titulo_Produtora AS Produtora,
+Convert(varchar(10),T.Titulo_DataCompra,103)  AS Compra, 
+T.Titulo_Quantidade AS Quantidade, 
+T.Titulo_Tipo AS Tipo, 
+P.Pais_Nome AS Pais, 
+T.Titulo_Midia_Tipo AS Midia, 
+TL.TipoLocacao_Nome AS TipoLocação
+FROM Titulo T
+INNER JOIN Pais P
+ON T.Pais_Codigo = P.Pais_Codigo
+INNER JOIN TipoLocacao TL
+ON T.Titulo_TipoLocacao_Codigo = TL.TipoLocacao_Codigo
+
+
+-- View responsável por selecionar todos os clientes cadastrados no banco. Principal utilização na aplicação JAVA na tela Produto
+GO
+CREATE VIEW vwClientes AS
+SELECT
+Cliente_Codigo AS Código,
+Cliente_Nome AS Nome,
+Cliente_Sobrenome AS Sobrenome,
+Cliente_CPF AS CPF,
+Cliente_Foto AS Foto,
+Cliente_Telefone AS Telefone,
+Cliente_Endereco AS Endereço,
+Cliente_Bairro AS Bairro,
+Cliente_Cep AS Cep,
+Cliente_Email AS Email,
+Convert(varchar(10),Cliente_Nascimento,103) AS Nascimento,
+Cliente_Genero AS Gênero 
+FROM Cliente
+
+
+
+
+
+
+-- View responsável por selecionar todos os funcionários cadastrados no banco. Principal utilização na aplicação JAVA na tela Produto
+GO
+CREATE VIEW vwFuncionarios AS
+SELECT
+Funcionario_Codigo AS Código,
+Funcionario_Nome AS Nome,
+Funcionario_Sobrenome AS Sobrenome,
+Funcionario_CPF AS CPF,
+Funcionario_Foto AS Foto,
+Funcionario_Telefone AS Telefone,
+Funcionario_Endereco AS Endereço,
+Funcionario_Bairro AS Bairro,
+Funcionario_Cep AS Cep,
+Funcionario_Email AS Email,
+Convert(varchar(10),Funcionario_Nascimento,103) AS Nascimento,
+Funcionario_Genero AS Gênero 
+FROM Funcionario
+
