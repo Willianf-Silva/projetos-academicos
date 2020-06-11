@@ -29,4 +29,4 @@ Após o planejamento de todo o software iniciou a codificação de forma procedu
 
 
 #### **Segundo projeto:**
-- Setup inicial utilizando o Spring Boot Initialzr.
+- Construindo.
