@@ -29,7 +29,7 @@ Após o planejamento de todo o software iniciou a codificação de forma procedu
 
 #### **Segundo projeto 01/2019 - Sistema para gerenciamento de locadora:**
 
-Diante as disciplinas que estavam sendo ministradas foi proposto um exercício para criar um sistema de gerenciamento de locadora utilizando a lingagem JAVA, conceitos de orientação a objeto e banco de dados local. 
+Diante as disciplinas que estavam sendo ministradas foi proposto um exercício para criar um sistema de gerenciamento de locadora utilizando a lingagem JAVA, conceitos de orientação a objeto e banco de dados local utilizando o SQL SERVER. 
 
 ##### Discilpinas intregalizadas no projeto
 - Programação orientada a objetos
